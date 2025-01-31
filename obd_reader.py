@@ -1,19 +1,21 @@
 import obd
 import sys
 import time
+import configparser
 
 obd.logger.setLevel(obd.logging.DEBUG)
 
-#Currently working on macOS environment. Bluetooth COM port hard coded for macOS. Otherwise switching to auto-connect mode which tries to go USB mode.
-def connect_to_obd():
-    print("Attempting to connect to OBD2 adapter via USB")
-    
-    usb_connection = obd.OBD()
+#This function tries to connect to the OBD2 adapter via USB. If the connection is successful, the function returns the connection object.
+def connect_to_obd(port):
+    print(f"Attempting to connect to OBD2 adapter on {port}")
+
+    usb_connection = obd.OBD(port)
     
     if usb_connection.is_connected():
         print("USB connection successful")
         return usb_connection
     
+    #Currently working on macOS environment. Bluetooth COM port hard coded for macOS. Otherwise switching to auto-connect mode which tries to go USB mode.
     #bluetooth_connection = obd.OBD("/dev/tty.Bluetooth-Incoming-Port")
     # if bluetooth_connection.is_connected():
     #     print("Default macOS Bluetooth connection successful")
@@ -35,8 +37,15 @@ def read_rpm(obd_connection):
 
 
 def main():
-    obd_connection = connect_to_obd()
-
+    
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    
+    port = config['device']['port']
+    
+    obd_connection = connect_to_obd(port)
+    
+    
     if obd_connection is not None:
         print("Connection successful")
         read_rpm(obd_connection)
