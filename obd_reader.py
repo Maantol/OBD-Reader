@@ -28,7 +28,8 @@ def read_rpm(obd_connection):
         while True:
             rpm_response = obd_connection.query(obd.commands['RPM'])
             if rpm_response.value is not None:
-                print(f"RPM: {rpm_response.value}")
+                print(f"RPM: {rpm_response.value}, flush=True", end="")
+                time.sleep(1)
             else:
                 print("No data received")
             time.sleep(1) 
